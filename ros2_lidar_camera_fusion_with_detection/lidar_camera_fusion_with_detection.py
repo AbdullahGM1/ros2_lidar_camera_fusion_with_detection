@@ -1,13 +1,14 @@
 import rclpy
-from rclpy.node import Node
+from rclpy.node import Node  # Import Node correctly
 import numpy as np
-from sensor_msgs.msg import PointCloud2, CameraInfo, Image
+from sensor_msgs.msg import PointCloud2, CameraInfo, Image, PointField  # Import PointField for PointCloud2 fields
 import sensor_msgs_py.point_cloud2 as pc2
 import math
 import cv2
 from cv_bridge import CvBridge
 from yolov8_msgs.msg import DetectionArray
 from geometry_msgs.msg import Point
+import struct  # Import struct for point cloud data packing
 
 class LidarToImageProjection(Node):
     def __init__(self):
@@ -28,29 +29,28 @@ class LidarToImageProjection(Node):
         # List to hold bounding boxes
         self.bounding_boxes = []
 
-        # Subscriber for point cloud
+        # Subscribers and Publishers (same as your original code)
         self.subscription = self.create_subscription(
             PointCloud2, '/scan/points', self.pointcloud_callback, 10)
 
-        # Subscriber for camera info to get intrinsic parameters
         self.camera_info_subscription = self.create_subscription(
             CameraInfo, '/interceptor/gimbal_camera_info', self.camera_info_callback, 10)
 
-        # Subscriber for camera image
         self.image_subscription = self.create_subscription(
             Image, '/interceptor/gimbal_camera', self.image_callback, 10)
 
-        # Subscriber for YOLOv8 bounding box detections
         self.detection_subscription = self.create_subscription(
             DetectionArray, '/yolo/tracking', self.detection_callback, 10)
 
-        # Publisher for the new image with lidar points drawn
         self.image_publisher = self.create_publisher(
             Image, '/image_lidar', 10)
 
-        # Publisher for the detected object distance (x, y, z)
         self.distance_publisher = self.create_publisher(
             Point, '/detected_object_position', 10)
+
+        # New publisher for detected object's point cloud
+        self.object_pointcloud_publisher = self.create_publisher(
+            PointCloud2, '/detected_object_pointcloud', 10)
 
     def camera_info_callback(self, msg):
         # Extract the camera intrinsic parameters from CameraInfo
@@ -104,7 +104,7 @@ class LidarToImageProjection(Node):
         image_with_points = self.current_image.copy()
 
         # Create a dictionary to accumulate points' (x, y, z) values for each bounding box
-        bbox_values = {i: {'x': [], 'y': [], 'z': []} for i in range(len(self.bounding_boxes))}
+        bbox_values = {i: {'x': [], 'y': [], 'z': [], 'points': []} for i in range(len(self.bounding_boxes))}
 
         for point in pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True):
             x, y, z = point[0], point[1], point[2]
@@ -134,30 +134,63 @@ class LidarToImageProjection(Node):
                             bbox_values[i]['x'].append(transformed_point[1])  # lidar y becomes camera x
                             bbox_values[i]['y'].append(transformed_point[2])  # lidar z becomes camera y
                             bbox_values[i]['z'].append(transformed_point[0])  # lidar x becomes camera z
+                            bbox_values[i]['points'].append(point)  # Store original point
 
                             # Draw the point on the image (as a small circle)
                             cv2.circle(image_with_points, (int(u), int(v)), 3, (0, 0, 255), -1)  # Red dot
                             break
 
-        # Calculate and publish average position (x, y, z) for each bounding box
+        # Publish the point cloud for each detected object and print its position
         for i, values in bbox_values.items():
-            if values['x']:  # Avoid empty lists
+            if values['points']:  # Avoid empty lists
+                # Calculate the average position
                 avg_x = sum(values['x']) / len(values['x'])
                 avg_y = sum(values['y']) / len(values['y'])
                 avg_z = sum(values['z']) / len(values['z'])
 
+                # Print the position of the detected object
                 self.get_logger().info(f"Bounding Box {i + 1}: Detected Object Position (x, y, z) = ({avg_z:.2f}, {avg_x:.2f}, {avg_y:.2f}) meters")
 
-                # Create and publish the position message (x, y, z) with recpect to the camera frame
+                # Create and publish the position message (x, y, z) with respect to the camera frame
                 distance_msg = Point()
                 distance_msg.x = avg_z  # transformed x is now z
                 distance_msg.y = avg_x  # transformed y is now x
                 distance_msg.z = avg_y  # transformed z is now y
                 self.distance_publisher.publish(distance_msg)
 
+                # Create PointCloud2 message from the points within the bounding box
+                object_pointcloud = self.create_pointcloud2_msg(values['points'], msg.header)
+                self.object_pointcloud_publisher.publish(object_pointcloud)
+
         # Convert the OpenCV image back to ROS Image message and publish
         image_msg = self.bridge.cv2_to_imgmsg(image_with_points, encoding='bgr8')
         self.image_publisher.publish(image_msg)
+
+    def create_pointcloud2_msg(self, points, header):
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+        ]
+        # Pack point cloud data into a PointCloud2 message
+        point_cloud_data = []
+        for point in points:
+            packed = struct.pack('fff', point[0], point[1], point[2])
+            point_cloud_data.append(packed)
+        point_cloud_data = b''.join(point_cloud_data)
+
+        # Create and return the PointCloud2 message
+        return PointCloud2(
+            header=header,
+            height=1,
+            width=len(points),
+            is_dense=False,
+            is_bigendian=False,
+            fields=fields,
+            point_step=12,  # 3 floats * 4 bytes each
+            row_step=12 * len(points),
+            data=point_cloud_data
+        )
 
 def main(args=None):
     rclpy.init(args=args)
@@ -168,4 +201,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
