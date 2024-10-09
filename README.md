@@ -17,9 +17,9 @@ This ROS2 package integrates 360-degree Lidar point cloud data with camera image
 ---
 
 ## Features
-- **Lidar-Camera Sensor Fusion**: Projects 360-degree Lidar data onto the image plane.
-- **Real-Time Object Detection**: Uses YOLOv8 for object detection and tracking.
-- **Distance Estimation**: Publishes the average distance to detected objects from the Lidar data.
+- **Lidar-Camera Sensor Fusion**: Transforms 360-degree Lidar data onto the image plane.
+- **Point Cloud Overlay within Detected Objects**: Overlays Lidar point cloud data within the bounding boxes of detected objects in the camera image.
+- **Position Estimation**: Publishes the estimate position of the detected objects with recpect to the camera frame.
 - **ROS2 Compatibility**: Designed for ROS2 Humble with full support for simulation environments.
 
 ---
@@ -36,11 +36,18 @@ cd ~/ros2_ws/src
 git clone https://github.com/yourusername/ros2_lidar_camera_fusion_with_detection.git
 ```
 ### Install Dependencies
+Run `rosdep` to install any missing dependencies:
 ```bash
 cd ~/ros2_ws
 rosdep install --from-paths src --ignore-src -r -y
 ```
 ### Build the Package
+After cloning and installing dependencies, build your package:
 ```bash
-colcon build --packages-select your_package_name
+colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 ```
+---
+
+## Usage
+### Prerequisites
+
