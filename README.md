@@ -2,7 +2,7 @@
 
 ## Description
 
-This ROS2 package fuses 360-degree lidar and camera data for enhanced object tracking. It transforms lidar point clouds from the lidar frame to the camera frame and overlays the points within detected object bounding boxes onto the image. The system estimates 3D positions by averaging the point cloud (x, y, z) within each bounding box, enabling real-time tracking and position estimation for multiple objects simultaneously.
+This ROS2 package fuses 360-degree lidar and camera data for enhanced object tracking. It transforms lidar point clouds from the lidar frame to the camera frame and overlays the points within detected object bounding boxes onto the image. The system estimates 3D positions by averaging the point cloud (x, y, z) within each bounding box and publishing the points inside these bounding boxes as point cloud data. This enables real-time tracking and position estimation for multiple objects.
 
 ---
 
@@ -19,6 +19,12 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 
 ### Lidar-Camera Fusion in Action
 
+
+<p align="center">
+- Overlays the points cloud within the detected object bounding boxes onto the image
+</p>
+
+
 <p align="center">
   <img src="images/1.png" alt="Lidar-Camera Fusion Example 1" width="500"/>
   <img src="images/2.png" alt="Lidar-Camera Fusion Example 2" width="500"/>
@@ -26,6 +32,16 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 
 <p align="center">
   <img src="images/camera_lidar_detection_sensor_fusion.gif" alt="Lidar-Camera Fusion in Action gif" width="600"/>
+</p>
+
+<p align="center">
+- Publish the points within the detected object bounding boxes as point cloud points.
+</p>
+
+
+<p align="center">
+  <img src="images/Detected_Object_Point_Cloud(1).png" alt="Lidar-Camera Fusion Example 1" width="500"/>
+  <img src="images/Detected_Object_Point_Cloud(2).gif" alt="Lidar-Camera Fusion Example 2" width="500"/>
 </p>
 
 ---
@@ -137,7 +153,9 @@ This node fuses lidar point cloud data onto the camera image frame and overlays 
 
 -**`/image_lidar`**: Image with projected Lidar points.
 
--**`/detected_object_distance`**: Average distance to the detected objects with respect to the camera frame.
+-**`/detected_object_distance`**: Average distance from the detected objects to the camera frame.
+
+-**`/detected_object_pointcloud`**: Points inside the bounding boxes are published as a point cloud.
 
 ---
 ## Contributing
