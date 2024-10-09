@@ -99,9 +99,10 @@ To run the package with your custom launch file (make sure you specify it):
 ```bash
 ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detection
 ```
+
 ---
 
-## Node
+## Features
 
 ### `lidar_camera_fusion_node`
 
