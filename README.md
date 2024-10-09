@@ -21,7 +21,7 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 
 
 <p align="center">
-- Overlays the points cloud within the detected object bounding boxes onto the image
+- Overlays the point cloud points within the detected object bounding boxes onto the image:
 </p>
 
 
