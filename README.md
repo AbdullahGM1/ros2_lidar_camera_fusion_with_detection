@@ -1,9 +1,9 @@
-# ROS2 Camera-Lidar Fusion with Object Detection
+# ROS2 Camera-Lidar Fusion Package
 
-This ROS2 package integrates data from a 360-degree lidar and a camera to achieve enhanced object tracking through sensor fusion. The package transforms all lidar point cloud data from the lidar frame to the camera frame. It then overlays the point cloud data corresponding to the detected objects (within their bounding boxes) onto the image.
+## Description
 
-  The fusion process enables the system to estimate the 3D position of detected objects by calculating the average point cloud (x, y, z) within each bounding box. This allows for real-time tracking and provides accurate position estimates for one or more objects simultaneously.
-  
+This ROS2 package fuses 360-degree lidar and camera data for enhanced object tracking. It transforms lidar point clouds from the lidar frame to the camera frame and overlays the points within detected object bounding boxes onto the image. The system estimates 3D positions by averaging the point cloud (x, y, z) within each bounding box, enabling real-time tracking and position estimation for multiple objects simultaneously.
+
 ---
 
 ## Table of Contents
@@ -19,12 +19,13 @@ This ROS2 package integrates data from a 360-degree lidar and a camera to achiev
 ---
 
 ## Features
-- **Transformation of lidar point cloud data to the camera frame**
-- **Overlay of point cloud data within detected object bounding boxes onto the image**
-- **3D position estimation based on the average point cloud of detected objects**
-- **Simultaneous tracking and position estimation for multiple detected objects**
-- **ROS2 Compatibility**
 
+- **Lidar to Camera Frame Transformation**: Converts lidar point cloud data into the camera's reference frame.
+- **Object Detection Overlay**: Overlays lidar points corresponding to detected objects (within bounding boxes) onto the camera image.
+- **3D Position Estimation**: Calculates the average (x, y, z) of point clouds within object bounding boxes to estimate 3D positions.
+- **Multi-Object Tracking**: Simultaneously tracks and estimates positions for multiple detected objects in real-time.
+- **ROS2 Integration**: Fully compatible with ROS2 for seamless integration in robotics applications.
+  
 ---
 
 ## Installation
