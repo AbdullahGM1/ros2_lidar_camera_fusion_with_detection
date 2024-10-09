@@ -10,7 +10,7 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Nodes](#nodes)
+4. [Node](#nodes)
 5. [Contributing](#contributing)
 
 ---
@@ -63,18 +63,26 @@ This node fuses Lidar point cloud data onto the camera image frame and overlays 
 
 #### Subscribed Topics:
 
-** `/scan/points` : Lidar point cloud data.
-** `/interceptor/gimbal_camera`: Camera image output.
-** `/interceptor/gimbal_camera_info`: Camera info for the Camera Intrinsic.
-** `/yolo/tracking`: Detected objects with bounding boxes.
+-**`/scan/points`**: Lidar point cloud data.
+
+-**`/interceptor/gimbal_camera`**: Camera image output.
+
+-**`/interceptor/gimbal_camera_info`**: Camera info for the Camera Intrinsic.
+
+-**`/yolo/tracking`**: Detected objects with bounding boxes.
 
 
 #### Published Topics:
 
-** `/image_lidar`: Image with projected Lidar points.
-** `/detected_object_distance`: Average distance to the detected objects with recpect to the camera frame.
+-**`/image_lidar`**: Image with projected Lidar points.
+
+-**`/detected_object_distance`**: Average distance to the detected objects with recpect to the camera frame.
 
 
 ```bash
 ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detection
 ```
+---
+## Contributing
+
+Feel free to contribute to this project by creating pull requests or opening issues.
