@@ -78,10 +78,6 @@ This node fuses Lidar point cloud data onto the camera image frame and overlays 
 
 -**`/detected_object_distance`**: Average distance to the detected objects with recpect to the camera frame.
 
-
-```bash
-ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detection
-```
 ---
 ## Contributing
 
