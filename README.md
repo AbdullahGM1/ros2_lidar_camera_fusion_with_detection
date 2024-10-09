@@ -73,7 +73,7 @@ Before running the package, make sure to modify the following parts of the code 
     [0, 0, 0, 1]
     ])
    ```
-   3. **Specify the Distance Range**: Set the distance range for points that should be transformed. In this example, only points between 0.5 and 10 meters are considered.
+3. **Specify the Distance Range**: Set the distance range for points that should be transformed. In this example, only points between 0.5 and 10 meters are considered.
    Example:
    ```python
     # Check if x, y, or z are finite and filter based on the desired distance range
