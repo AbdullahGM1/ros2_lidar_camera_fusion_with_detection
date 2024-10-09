@@ -7,8 +7,8 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 ---
 
 ## Table of Contents
-1. [Features](#features)
-2. [Demonstration](#demonstration)
+1. [Demonstration](#demonstration)
+2. [Features](#features)
 3. [Installation](#installation)
 4. [Usage](#usage)
 5. [Node](#node)
