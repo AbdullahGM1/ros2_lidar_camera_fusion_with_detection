@@ -20,7 +20,7 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 
 ## Features
 
-- **Lidar to Camera Frame Transformation**: Converts lidar point cloud data into the camera's reference frame.
+- **Lidar to Camera Frame Transformation**: Fuse lidar point cloud data into the camera reference frame.
 - **Object Detection Overlay**: Overlays lidar points corresponding to detected objects (within bounding boxes) onto the camera image.
 - **3D Position Estimation**: Calculates the average (x, y, z) of point clouds within object bounding boxes to estimate 3D positions.
 - **Multi-Object Tracking**: Simultaneously tracks and estimates positions for multiple detected objects in real-time.
