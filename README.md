@@ -83,7 +83,15 @@ Before running the package, make sure to modify the following parts of the code 
 ### Build the Package
 After modifying the code, build your package:
 ```bash
+cd ~/ros2_ws
 colcon build --packages-select ros2_lidar_camera_fusion_with_detection
+```
+### Source the Workspace
+Before running the package, ensure you source the workspace to have access to the built packages:
+
+For **Bash**:
+```bash
+source ~/ros2_ws/install/setup.bash
 ```
 
 ### Run the Node
