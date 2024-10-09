@@ -56,8 +56,8 @@ To run the package with your custom launch file (make sure you specify it):
 ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detection
 ```
 ---
-## Node
 
+## Node
 ### lidar_camera_fusion_node
 This node fuses Lidar point cloud data onto the camera image frame and overlays the points within detected object bounding boxes onto the image.
 
