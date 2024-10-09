@@ -1,7 +1,9 @@
 # ROS2 Camera-Lidar Fusion with Object Detection
 
-  This ROS2 package integrates data from a 360-degree lidar and a camera to achieve enhanced object tracking through sensor fusion. The package transforms all lidar point cloud data from the lidar frame to the camera frame. It then overlays the point cloud data corresponding to the detected objects (within their bounding boxes) onto the image.
+This ROS2 package integrates data from a 360-degree lidar and a camera to achieve enhanced object tracking through sensor fusion. The package transforms all lidar point cloud data from the lidar frame to the camera frame. It then overlays the point cloud data corresponding to the detected objects (within their bounding boxes) onto the image.
+
   The fusion process enables the system to estimate the 3D position of detected objects by calculating the average point cloud (x, y, z) within each bounding box. This allows for real-time tracking and provides accurate position estimates for one or more objects simultaneously.
+  
 ---
 
 ## Table of Contents
