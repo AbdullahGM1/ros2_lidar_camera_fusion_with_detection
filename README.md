@@ -52,6 +52,7 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 - **Object Detection Overlay**: Overlays lidar points corresponding to detected objects (within bounding boxes) onto the camera image.
 - **3D Position Estimation**: Calculates the average (x, y, z) of point clouds within object bounding boxes to estimate 3D positions.
 - **Multi-Object Tracking**: Simultaneously tracks and estimates positions for multiple detected objects in real-time.
+- **Detected Object Point Cloud Publishing**: Publishes lidar points overlaid onto the image within detected object bounding boxes as a separate point cloud.
 - **ROS2 Integration**: Fully compatible with ROS2 for seamless integration in robotics applications.
   
 ---
