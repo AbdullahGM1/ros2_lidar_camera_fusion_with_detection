@@ -28,9 +28,19 @@ This ROS2 package integrates 360-degree Lidar point cloud data with camera image
 
 ### Prerequisites
 - **ROS2 Humble**: Ensure you have ROS2 Humble installed on your machine. [Installation Guide](https://docs.ros.org/en/humble/Installation.html)
-- **YOLOv8**: Follow the instructions to set up YOLOv8 in ROS2 for object detection. [Installation Guide](https://github.com/mgonzs13/yolov8_ros)
+- **YOLOv8**: Follow the instructions to set up YOLOv8 in ROS2 for object detection. [Installation Guide](https://github.com/mgonzs13/yolov8_ros) - You can use any Yolo Model.
 
 ### Clone the Repository
 ```bash
 cd ~/ros2_ws/src
 git clone https://github.com/yourusername/ros2_lidar_camera_fusion_with_detection.git
+```
+### Install Dependencies
+```bash
+cd ~/ros2_ws
+rosdep install --from-paths src --ignore-src -r -y
+```
+### Build the Package
+```bash
+colcon build --packages-select your_package_name
+```
