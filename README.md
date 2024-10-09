@@ -102,7 +102,7 @@ ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detect
 
 ---
 
-## Features
+## Node
 
 ### `lidar_camera_fusion_node`
 
