@@ -94,8 +94,10 @@ ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detect
 ---
 
 ## Node
-### lidar_camera_fusion_node
-This node fuses Lidar point cloud data onto the camera image frame and overlays the points within detected object bounding boxes onto the image.
+
+### `lidar_camera_fusion_node`
+
+This node fuses lidar point cloud data onto the camera image frame and overlays the points within detected object bounding boxes onto the image.
 
 #### Subscribed Topics:
 
@@ -112,7 +114,7 @@ This node fuses Lidar point cloud data onto the camera image frame and overlays 
 
 -**`/image_lidar`**: Image with projected Lidar points.
 
--**`/detected_object_distance`**: Average distance to the detected objects with recpect to the camera frame.
+-**`/detected_object_distance`**: Average distance to the detected objects with respect to the camera frame.
 
 ---
 ## Contributing
