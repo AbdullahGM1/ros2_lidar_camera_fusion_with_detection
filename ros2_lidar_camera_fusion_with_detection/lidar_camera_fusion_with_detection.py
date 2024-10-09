@@ -1,14 +1,14 @@
 import rclpy
 from rclpy.node import Node  
 import numpy as np
-from sensor_msgs.msg import PointCloud2, CameraInfo, Image, PointField  # Import PointField for PointCloud2 fields
+from sensor_msgs.msg import PointCloud2, CameraInfo, Image, PointField  
 import sensor_msgs_py.point_cloud2 as pc2
 import math
 import cv2
 from cv_bridge import CvBridge
 from yolov8_msgs.msg import DetectionArray
 from geometry_msgs.msg import Point
-import struct  # Import struct for point cloud data packing
+import struct  
 
 class LidarToImageProjection(Node):
     def __init__(self):
@@ -29,26 +29,31 @@ class LidarToImageProjection(Node):
         # List to hold bounding boxes
         self.bounding_boxes = []
 
-        # Subscribers and Publishers (same as your original code)
+        # Subscribe to Lidar Point Cloud
         self.subscription = self.create_subscription(
             PointCloud2, '/scan/points', self.pointcloud_callback, 10)
 
+        # Subscribe to Camerainfo   
         self.camera_info_subscription = self.create_subscription(
             CameraInfo, '/interceptor/gimbal_camera_info', self.camera_info_callback, 10)
 
+        # Subscribe to Camera Image  
         self.image_subscription = self.create_subscription(
             Image, '/interceptor/gimbal_camera', self.image_callback, 10)
 
+        # Subscribe to Detected Object Bounding Box  
         self.detection_subscription = self.create_subscription(
             DetectionArray, '/yolo/tracking', self.detection_callback, 10)
 
+        # publisher for Image with projected Lidar points
         self.image_publisher = self.create_publisher(
             Image, '/image_lidar', 10)
 
+        # publisher for publishing the detected objects position
         self.distance_publisher = self.create_publisher(
             Point, '/detected_object_position', 10)
 
-        # New publisher for detected object's point cloud
+        # publisher for detected object's point cloud
         self.object_pointcloud_publisher = self.create_publisher(
             PointCloud2, '/detected_object_pointcloud', 10)
 
