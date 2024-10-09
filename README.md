@@ -1,7 +1,7 @@
 # ROS2 Camera-Lidar Fusion with Object Detection
 
-This ROS2 package integrates 360-degree Lidar point cloud data with camera imagery and performs real-time object detection using YOLOv8. It projects Lidar data onto the image plane and fuses it with the camera stream, providing enhanced object tracking and distance estimation for robotic applications.
-
+  This ROS2 package integrates data from a 360-degree lidar and a camera to achieve enhanced object tracking through sensor fusion. The package transforms all lidar point cloud data from the lidar frame to the camera frame. It then overlays the point cloud data corresponding to the detected objects (within their bounding boxes) onto the image.
+  The fusion process enables the system to estimate the 3D position of detected objects by calculating the average point cloud (x, y, z) within each bounding box. This allows for real-time tracking and provides accurate position estimates for one or more objects simultaneously.
 ---
 
 ## Table of Contents
@@ -17,10 +17,11 @@ This ROS2 package integrates 360-degree Lidar point cloud data with camera image
 ---
 
 ## Features
-- **Lidar-Camera Sensor Fusion**: Transforms 360-degree Lidar data onto the image plane.
-- **Point Cloud Overlay within Detected Objects**: Overlays Lidar point cloud data within the bounding boxes of detected objects in the camera image.
-- **Position Estimation**: Publishes the estimate position of the detected objects with recpect to the camera frame.
-- **ROS2 Compatibility**: Designed for ROS2 Humble with full support for simulation environments.
+- **Transformation of lidar point cloud data to the camera frame**
+- **Overlay of point cloud data within detected object bounding boxes onto the image**
+- **3D position estimation based on the average point cloud of detected objects**
+- **Simultaneous tracking and position estimation for multiple detected objects**
+- **ROS2 Compatibility**
 
 ---
 
@@ -49,5 +50,16 @@ colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 ---
 
 ## Usage
-### Prerequisites
+### Run the Node
+To run the package with your custom launch file (make sure you specify it):
+```bash
+ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detection
+```
+---
+## Node
+### lidar_camera_fusion_node
+This node transforms Lidar point cloud data onto the camera image frame, and overlay
 
+```bash
+ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detection
+```
