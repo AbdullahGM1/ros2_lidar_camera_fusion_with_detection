@@ -8,11 +8,25 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 
 ## Table of Contents
 1. [Features](#features)
-2. [Installation](#installation)
-3. [Usage](#usage)
-4. [Node](#nodes)
-5. [Demonstration](#demonstration)
+2. [Demonstration](#demonstration)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Node](#node)
 6. [Contributing](#contributing)
+
+---
+## Demonstration
+
+### Lidar-Camera Fusion in Action
+
+<p align="center">
+  <img src="images/1.png" alt="Lidar-Camera Fusion Example 1" width="500"/>
+  <img src="images/2.png" alt="Lidar-Camera Fusion Example 2" width="500"/>
+</p>
+
+<p align="center">
+  <img src="images/camera_lidar_detection_sensor_fusion.gif" alt="Lidar-Camera Fusion gif" width="800"/>
+</p>
 
 ---
 
@@ -124,20 +138,6 @@ This node fuses lidar point cloud data onto the camera image frame and overlays 
 -**`/image_lidar`**: Image with projected Lidar points.
 
 -**`/detected_object_distance`**: Average distance to the detected objects with respect to the camera frame.
-
----
-## Demonstration
-
-### Lidar-Camera Fusion in Action
-
-<p align="center">
-  <img src="images/1.png" alt="Lidar-Camera Fusion Example 1" width="500"/>
-  <img src="images/2.png" alt="Lidar-Camera Fusion Example 2" width="500"/>
-</p>
-
-<p align="center">
-  <img src="images/camera_lidar_detection_sensor_fusion.gif" alt="Lidar-Camera Fusion gif" width="800"/>
-</p>
 
 ---
 ## Contributing
