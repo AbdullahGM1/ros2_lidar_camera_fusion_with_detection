@@ -50,6 +50,32 @@ colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 ---
 
 ## Usage
+
+### Modifying the Code for Your Setup
+Before running the package, make sure to modify the following parts of the code in `lidar_camera_fusion_with_detection.py` to match your setup:
+
+
+1. **Specify the Image Dimensions**: Set the correct image width and height according to your camera's resolution.
+   Example:
+   ```python
+   # Define image width and height
+   image_width = 640
+   image_height = 480
+   ```
+2. **Set the Transformation Matrix**: Update the transformation matrix between the Lidar and the camera based on your setup.
+   Example:
+   ```python
+# Transformation Matrix Between the Lidar and the Camera
+T_lidar_to_camera = np.array([
+    [0, -1, 0, 0.1],  # Modify this matrix based on your setup
+    [0, 0, -1, 0],
+    [1, 0, 0, 0],
+    [0, 0, 0, 1]
+])
+   ```
+   
+
+
 ### Run the Node
 To run the package with your custom launch file (make sure you specify it):
 ```bash
