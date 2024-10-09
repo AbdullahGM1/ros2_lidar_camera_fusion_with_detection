@@ -155,7 +155,7 @@ This node fuses lidar point cloud data onto the camera image frame and overlays 
 
 -**`/detected_object_distance`**: Average distance from the detected objects to the camera frame.
 
--**`/detected_object_pointcloud`**: Points inside the bounding boxes are published as a point cloud points.
+-**`/detected_object_pointcloud`**: Points inside the bounding boxes are published as point cloud points.
 
 ---
 ## Contributing
