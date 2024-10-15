@@ -58,6 +58,7 @@ class LidarToImageProjection(Node):
             PointCloud2, '/detected_object_pointcloud', 10)
 
     def camera_info_callback(self, msg):
+
         # Extract the camera intrinsic parameters from CameraInfo
         self.fx = msg.k[0]  # Focal length in x (fx)
         self.fy = msg.k[4]  # Focal length in y (fy)
@@ -65,12 +66,19 @@ class LidarToImageProjection(Node):
         self.cy = msg.k[5]  # Principal point in y (cy)
 
     def image_callback(self, msg):
+
         # Convert ROS Image message to OpenCV image
         self.current_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
+        # Store the image width and height
+        self.image_width = msg.width
+        self.image_height = msg.height
+
     def detection_callback(self, msg):
+
         # Extract bounding boxes from the YOLO detections
         self.bounding_boxes = []
+
         for detection in msg.detections:
             bbox_center_x = detection.bbox.center.position.x
             bbox_center_y = detection.bbox.center.position.y
@@ -86,16 +94,13 @@ class LidarToImageProjection(Node):
             self.bounding_boxes.append((top_left_x, top_left_y, bottom_right_x, bottom_right_y))
 
     def pointcloud_callback(self, msg):
+        
         # Check if camera intrinsics and image are received
         if self.fx is None or self.fy is None or self.cx is None or self.cy is None:
             return
 
         if self.current_image is None:
             return
-
-        # Define image width and height
-        image_width = 640
-        image_height = 480
 
         # Transformation Matrix Between the Lidar to The camera.
         T_lidar_to_camera = np.array([
@@ -129,7 +134,7 @@ class LidarToImageProjection(Node):
                 v = (self.fy * transformed_point[1] / transformed_point[2]) + self.cy
 
                 # Check if the projected point is within image bounds
-                if 0 <= u < image_width and 0 <= v < image_height:
+                if 0 <= u < self.image_width and 0 <= v < self.image_height:
 
                     # Check if the projected point is within any bounding box
                     for i, bbox in enumerate(self.bounding_boxes):
