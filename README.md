@@ -31,7 +31,7 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 </p>
 
 <p align="center">
-  <img src="images/camera_lidar_detection_sensor_fusion.gif" alt="Lidar-Camera Fusion in Action gif" width="600"/>
+  <img src="images/Camera_Lidar_Detection_Sensor_Fusion.gif" alt="Lidar-Camera Fusion in Action gif" width="600"/>
 </p>
 
 <p align="center">
@@ -41,7 +41,7 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 
 <p align="center">
   <img src="images/Detected_Object_Point_Cloud(3).png" alt="Lidar-Camera Fusion Example 1" width="500"/>
-  <img src="images/Detected_Object_Point_Cloud(2).gif" alt="Lidar-Camera Fusion Example 2" width="500"/>
+  <img src="images/Detected_Object_Point_Cloud.gif" alt="Lidar-Camera Fusion Example 2" width="500"/>
 </p>
 
 ---
