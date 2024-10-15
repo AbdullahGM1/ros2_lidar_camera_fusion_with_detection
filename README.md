@@ -86,7 +86,7 @@ colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 ### Modifying the Code for Your Setup
 Before running the package, make sure to modify the following parts of the code in `lidar_camera_fusion_with_detection.py` to match your setup:
 
-1. **Set the Camera & the Lidar TF Name**: Update the TF name for the camera  and lidar frames.
+1. **Set the Camera & the Lidar TF Names**: Update the TF name for the camera  and lidar frames. (It will take the TF from (`/tf_static`) topic.) 
    Example:
    ```python
     # Declare parameters
