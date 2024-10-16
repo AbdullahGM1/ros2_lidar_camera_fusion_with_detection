@@ -27,9 +27,6 @@ class LidarToImageProjection(Node):
         self.lidar_frame_ = self.get_parameter('lidar_frame').get_parameter_value().string_value
         self.gimbal_camera_frame_ = self.get_parameter('gimbal_camera_frame').get_parameter_value().string_value
 
-        # Initialize camera intrinsic values
-        self.fx, self.fy, self.cx, self.cy = None, None, None, None  # Camera intrinsics
-
         # Image to hold the current frame
         self.current_image = None
 
