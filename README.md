@@ -2,7 +2,7 @@
 
 ## Description
 
-This ROS2 package fuses 360-degree lidar and camera data for enhanced object tracking. It transforms lidar point clouds from the lidar frame to the camera frame and overlays the points within the detected object bounding boxes onto the image. The system estimates 3D positions of the detected object by averaging the point cloud (x, y, z) within the bounding box. Also, publishing the points inside these bounding boxes as point cloud data. This enables real-time tracking and position estimation for multiple objects.
+This ROS2 package fuses 360-degree lidar and camera data for enhanced object tracking. It transforms lidar point clouds from the lidar frame to the camera frame and overlays the points within the detected object bounding boxes onto the image. The system estimates the 3D positions of the detected object by averaging the point cloud (x, y, z) within the bounding box. It also publishes the points inside these bounding boxes as point cloud data. This enables real-time tracking and position estimation for multiple objects.
 
 ---
 
@@ -86,17 +86,10 @@ colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 ### Modifying the Code for Your Setup
 Before running the package, make sure to modify the following parts of the code in `lidar_camera_fusion_with_detection.py` to match your setup:
 
-
-1. **Specify the Image Dimensions**: Set the correct image width and height according to your camera's resolution.
+1. **Set the Transformation Matrix**: Update the transformation matrix between the Lidar and the camera based on your setup.
    Example:
    ```python
-   # Define image width and height
-   image_width = 640
-   image_height = 480
-   ```
-2. **Set the Transformation Matrix**: Update the transformation matrix between the Lidar and the camera based on your setup.
-   Example:
-   ```python
+     ```python
     # Transformation Matrix Between the Lidar and the Camera
     T_lidar_to_camera = np.array([
     [0, -1, 0, 0.1],  # Modify this matrix based on your setup
@@ -108,9 +101,14 @@ Before running the package, make sure to modify the following parts of the code 
 3. **Specify the Distance Range**: Set the distance range for points that should be transformed. In this example, only points between 0.5 and 10 meters are considered.
    Example:
    ```python
-    # Check if x, y, or z are finite and filter based on the desired distance range
-    if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and 0.5 < x < 10:
-    # Apply transformation
+    if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and (0.1 <= x <= 10.0):
+                # Convert point to PointStamped for transformation
+                point_stamped = PointStamped()
+                point_stamped.point.x = x
+                point_stamped.point.y = y
+                point_stamped.point.z = z
+                point_stamped.header.frame_id = self.lidar_frame_
+                points.append(point_stamped)
    ```
 ### Build the Package
 After modifying the code, build your package:

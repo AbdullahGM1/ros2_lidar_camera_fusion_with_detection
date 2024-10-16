@@ -7,25 +7,12 @@ import math
 import cv2
 from cv_bridge import CvBridge
 from yolov8_msgs.msg import DetectionArray
-from geometry_msgs.msg import Point, PointStamped
+from geometry_msgs.msg import Point
 import struct
-import tf2_ros
-from tf2_geometry_msgs import do_transform_point
 
 class LidarToImageProjection(Node):
     def __init__(self):
         super().__init__('lidar_to_image_projection')
-
-        # Declare parameters
-        self.declare_parameters(
-            namespace='',
-            parameters=[
-                ('lidar_frame', 'x500_mono_1/lidar_link/gpu_lidar'),
-                ('gimbal_camera_frame', 'interceptor/gimbal_camera'),])
-
-        # Get parameters
-        self.lidar_frame_ = self.get_parameter('lidar_frame').get_parameter_value().string_value
-        self.gimbal_camera_frame_ = self.get_parameter('gimbal_camera_frame').get_parameter_value().string_value
 
         # Initialize camera intrinsic values
         self.fx, self.fy, self.cx, self.cy = None, None, None, None  # Camera intrinsics
@@ -39,30 +26,26 @@ class LidarToImageProjection(Node):
         # OpenCV Bridge for converting ROS Image to OpenCV format
         self.bridge = CvBridge()
 
-        # Create tf2 buffer and listener
-        self.tf_buffer = tf2_ros.Buffer()
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
-
         # Subscribe to Lidar Point Cloud
-        self.subscription = self.create_subscription(PointCloud2, '/scan/points', self.pointcloud_callback, 10)
+        self.subscription = self.create_subscription(PointCloud2,'/scan/points',self.pointcloud_callback,10)
 
         # Subscribe to CameraInfo
-        self.camera_info_subscription = self.create_subscription(CameraInfo, '/interceptor/gimbal_camera_info', self.camera_info_callback, 10)
+        self.camera_info_subscription = self.create_subscription(CameraInfo,'/interceptor/gimbal_camera_info',self.camera_info_callback,10)
 
         # Subscribe to Camera Image
-        self.image_subscription = self.create_subscription(Image, '/interceptor/gimbal_camera', self.image_callback, 10)
+        self.image_subscription = self.create_subscription(Image,'/interceptor/gimbal_camera',self.image_callback,10)
 
         # Subscribe to Detected Object Bounding Box
-        self.detection_subscription = self.create_subscription(DetectionArray, '/yolo/tracking', self.detection_callback, 10)
+        self.detection_subscription = self.create_subscription(DetectionArray,'/yolo/tracking',self.detection_callback,10)
 
         # Publisher for Image with projected Lidar points
-        self.image_publisher = self.create_publisher(Image, '/image_lidar', 10)
+        self.image_publisher = self.create_publisher(Image,'/image_lidar',10)
 
         # Publisher for publishing the detected objects' positions
-        self.distance_publisher = self.create_publisher(Point, '/detected_object_position', 10)
+        self.distance_publisher = self.create_publisher(Point,'/detected_object_position',10)
 
         # Publisher for detected object's point cloud
-        self.object_pointcloud_publisher = self.create_publisher(PointCloud2, '/detected_object_pointcloud', 10)
+        self.object_pointcloud_publisher = self.create_publisher(PointCloud2,'/detected_object_pointcloud',10)
 
     def camera_info_callback(self, msg):
         # Extract the camera intrinsic parameters from CameraInfo
@@ -107,17 +90,13 @@ class LidarToImageProjection(Node):
             self.get_logger().warning("Camera intrinsics are not available yet.")
             return
 
-        # Get the transform from the lidar frame to the camera frame
-        try:
-            transform = self.tf_buffer.lookup_transform(
-                self.gimbal_camera_frame_,  # Target frame
-                self.lidar_frame_,  # Source frame
-                rclpy.time.Time(),  # Latest available transform
-                rclpy.duration.Duration(seconds=1.0)  # Timeout
-            )
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
-            self.get_logger().error(f"Could not get transform: {ex}")
-            return
+        # Transformation Matrix Between the Lidar and the camera
+        T_lidar_to_camera = np.array([
+            [0, -1, 0, 0.1],
+            [0,  0, -1, 0],
+            [1,  0,  0, 0],
+            [0,  0,  0, 1]
+        ])
 
         # Create a copy of the image to draw the points
         image_with_points = self.current_image.copy()
@@ -133,8 +112,10 @@ class LidarToImageProjection(Node):
 
         # Step 2 and 3: Process each point
         for point in points:
-            # Step 2: Transformation using do_transform_point
-            transformed_point, u, v = self.transformation(point, transform)
+            x, y, z = point[0], point[1], point[2]
+
+            # Step 2: Transformation
+            transformed_point, u, v = self.transformation(x, y, z, T_lidar_to_camera)
 
             # Step 3: Point cloud within the bounding box
             self.point_cloud_within_bounding_box(
@@ -150,33 +131,31 @@ class LidarToImageProjection(Node):
 
     def point_cloud_data_extraction(self, msg):
         points = []
-        # Extract the point cloud data
         for point in pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True):
-            x, y, z = float(point[0]), float(point[1]), float(point[2])
+            x, y, z = point[0], point[1], point[2]
 
-            # Check if x, y, or z are finite and if x (depth) is within the desired range
-            if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and (0.1 <= x <= 10.0):
-                # Convert point to PointStamped for transformation
-                point_stamped = PointStamped()
-                point_stamped.point.x = x
-                point_stamped.point.y = y
-                point_stamped.point.z = z
-                point_stamped.header.frame_id = self.lidar_frame_
-                points.append(point_stamped)
-      
+            # Check if x, y, or z are finite values (not inf) and if x (Depth) is within the range
+            if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and 0.5 < x < 10:
+                points.append([x, y, z])
         return points
 
-    def transformation(self, point_stamped, transform):
-        # Transform the Point from lidar to camera frame
-        transformed_point = do_transform_point(point_stamped, transform)
+    def transformation(self, x, y, z, T_lidar_to_camera):
+
+        # Convert the 3D point to homogeneous coordinates
+        homogeneous_point = [x, y, z, 1.0]
+        points_np = np.array(homogeneous_point)
+
+        # Transform the point from lidar to camera frame
+        transformed_point = np.dot(T_lidar_to_camera, points_np)
 
         # Project the point onto the image plane using camera intrinsics from the camera frame
-        u = (self.fx * transformed_point.point.x / transformed_point.point.z) + self.cx
-        v = (self.fy * transformed_point.point.y / transformed_point.point.z) + self.cy
+        u = (self.fx * transformed_point[0] / transformed_point[2]) + self.cx
+        v = (self.fy * transformed_point[1] / transformed_point[2]) + self.cy
 
         return transformed_point, u, v
 
     def point_cloud_within_bounding_box(self, u, v, transformed_point, bbox_values, image_with_points, point, header):
+
         # Check if the projected point is within image bounds
         if 0 <= u < self.image_width and 0 <= v < self.image_height:
             # Check if the projected point is within any bounding box
@@ -187,9 +166,9 @@ class LidarToImageProjection(Node):
                     and top_left_y <= v <= bottom_right_y
                 ):
                     # Add the (x, y, z) values of the point to the corresponding bounding box
-                    bbox_values[i]['x'].append(transformed_point.point.x)  
-                    bbox_values[i]['y'].append(transformed_point.point.y)  
-                    bbox_values[i]['z'].append(transformed_point.point.z)  
+                    bbox_values[i]['x'].append(transformed_point[1])  # lidar y becomes camera x
+                    bbox_values[i]['y'].append(transformed_point[2])  # lidar z becomes camera y
+                    bbox_values[i]['z'].append(transformed_point[0])  # lidar x becomes camera z
                     bbox_values[i]['points'].append(point)  # Store original point
 
                     # Draw the point on the image (as a small circle)
@@ -206,6 +185,7 @@ class LidarToImageProjection(Node):
                 self.object_pointcloud_publisher.publish(object_pointcloud)
 
     def detected_object_position(self, bbox_values, header):
+
         # Publish the point cloud for each detected object and print its position
         for i, values in bbox_values.items():
             if values['points']:  # Avoid empty lists
@@ -228,7 +208,7 @@ class LidarToImageProjection(Node):
                 self.distance_publisher.publish(distance_msg)
 
     def create_pointcloud2_msg(self, points, header):
-        # Publishing the (x,y,z) point cloud with respect to the lidar frame.
+        # Publishing the (x,y,z) point cloud with recpect to the lidar frame. 
         fields = [
             PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
@@ -237,7 +217,7 @@ class LidarToImageProjection(Node):
         # Pack point cloud data into a PointCloud2 message
         point_cloud_data = []
         for point in points:
-            packed = struct.pack('fff', point.point.x, point.point.y, point.point.z)
+            packed = struct.pack('fff', point[0], point[1], point[2])
             point_cloud_data.append(packed)
         point_cloud_data = b''.join(point_cloud_data)
 
