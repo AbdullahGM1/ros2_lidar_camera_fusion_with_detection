@@ -14,9 +14,6 @@ class LidarToImageProjection(Node):
     def __init__(self):
         super().__init__('lidar_to_image_projection')
 
-        # Initialize camera intrinsic values
-        self.fx, self.fy, self.cx, self.cy = None, None, None, None  # Camera intrinsics
-
         # Image to hold the current frame
         self.current_image = None
 
