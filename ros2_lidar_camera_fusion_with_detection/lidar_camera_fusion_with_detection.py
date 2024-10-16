@@ -17,9 +17,6 @@ class LidarToImageProjection(Node):
         # Image to hold the current frame
         self.current_image = None
 
-        # List to hold bounding boxes
-        self.bounding_boxes = []
-
         # OpenCV Bridge for converting ROS Image to OpenCV format
         self.bridge = CvBridge()
 
