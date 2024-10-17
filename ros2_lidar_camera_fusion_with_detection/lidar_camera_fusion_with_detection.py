@@ -19,11 +19,16 @@ class LidarToImageProjection(Node):
 
         # Load transformation matrix from YAML file
         package_share_directory = get_package_share_directory('ros2_lidar_camera_fusion_with_detection')
-        yaml_file_path = os.path.join(package_share_directory, 'config', 'transform.yaml')
+        yaml_file_path = os.path.join(package_share_directory, 'config', 'setup_config.yaml')
 
-        # Use instance method to load the matrix
-        self.transformation_matrix = self.load_transformation_matrix(yaml_file_path)
+        # Load transformation matrix and depth_range from the YAML file
+        yaml_data = self.load_yaml_file(yaml_file_path)
+        self.transformation_matrix = np.array(yaml_data['transformation_matrix'])
+        self.depth_range_min = yaml_data['depth_range']['min']
+        self.depth_range_max = yaml_data['depth_range']['max']
+
         self.get_logger().info(f'Loaded transformation matrix:\n{self.transformation_matrix}')
+        self.get_logger().info(f'Loaded depth_range: min={self.depth_range_min}, max={self.depth_range_max}')
 
         # Image to hold the current frame
         self.current_image = None
@@ -52,13 +57,13 @@ class LidarToImageProjection(Node):
         # Publisher for detected object's point cloud
         self.object_pointcloud_publisher = self.create_publisher(PointCloud2, '/detected_object_pointcloud', 10)
 
-    def load_transformation_matrix(self, yaml_file):
+
+    def load_yaml_file(self, yaml_file):
         """
-        Instance method to load the transformation matrix from a YAML file
+        Loads data from a YAML file.
         """
         with open(yaml_file, 'r') as file:
-            data = yaml.safe_load(file)
-        return np.array(data['transformation_matrix'])
+            return yaml.safe_load(file)
 
     def camera_info_callback(self, msg):
         self.fx, self.fy, self.cx, self.cy = msg.k[0], msg.k[4], msg.k[2], msg.k[5]
@@ -102,12 +107,16 @@ class LidarToImageProjection(Node):
         image_msg = self.bridge.cv2_to_imgmsg(image_with_points, encoding='bgr8')
         self.image_publisher.publish(image_msg)
 
+
     def point_cloud_data_extraction(self, msg):
-        return [
-            [point[0], point[1], point[2]]
-            for point in pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
-            if math.isfinite(point[0]) and math.isfinite(point[1]) and math.isfinite(point[2]) and 0.5 < point[0] < 10
-        ]
+        points = []
+        for point in pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True):
+            x, y, z = point[0], point[1], point[2]
+
+            # Check if x, y, or z are finite values and if x (depth) is within the loaded depth range from YAML
+            if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and self.depth_range_min < x < self.depth_range_max:
+                points.append([x, y, z])
+        return points
 
     def transformation(self, x, y, z, transformation_matrix):
         # Convert the 3D points to homogeneous coordinates
