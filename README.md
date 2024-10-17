@@ -88,18 +88,17 @@ Before running the package, make sure to modify the following parts of the code 
 
 1. **Set the Transformation Matrix**: Update the transformation matrix between the Lidar and the camera based on your setup in the `/ros2_lidar_camera_fusion_with_detection/config` folder.
    Example:
-   ```python
-     ```yaml
+```
 transformation_matrix:
   - [0, -1, 0, 0.1]
   - [0, 0, -1, 0]
   - [1, 0, 0, 0]
   - [0, 0, 0, 1]
+```
 
-
-   ```
 3. **Specify the Distance Range**: Set the distance range for points that should be transformed. In this example, only points between 0.5 and 10 meters are considered.
    Example:
+   
    ```python
     if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and (0.1 <= x <= 10.0):
                 # Convert point to PointStamped for transformation
