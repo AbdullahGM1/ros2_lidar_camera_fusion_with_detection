@@ -83,23 +83,22 @@ colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 
 ## Usage
 
-### Modifying the Code for Your Setup
-Before running the package, make sure to modify the following parts of the code in `lidar_camera_fusion_with_detection.py` to match your setup:
+### Modifying the Package for Your Setup
+Before running the package, make sure to modify the following parts of the package to match your setup:
 
-1. **Set the Transformation Matrix**: Update the transformation matrix between the Lidar and the camera based on your setup.
+1. **Configure the Transformation Matrix**: Modify the transformation matrix between the Lidar and the camera to match your setup by updating the `transform.yaml` file located in the `/ros2_lidar_camera_fusion_with_detection/config` directory.
    Example:
-   ```python
-     ```python
-    # Transformation Matrix Between the Lidar and the Camera
-    T_lidar_to_camera = np.array([
-    [0, -1, 0, 0.1],  # Modify this matrix based on your setup
-    [0, 0, -1, 0],
-    [1, 0, 0, 0],
-    [0, 0, 0, 1]
-    ])
-   ```
+```
+transformation_matrix:
+  - [0, -1, 0, 0.1]
+  - [0, 0, -1, 0]
+  - [1, 0, 0, 0]
+  - [0, 0, 0, 1]
+```
+
 3. **Specify the Distance Range**: Set the distance range for points that should be transformed. In this example, only points between 0.5 and 10 meters are considered.
    Example:
+   
    ```python
     if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and (0.1 <= x <= 10.0):
                 # Convert point to PointStamped for transformation
