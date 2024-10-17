@@ -84,9 +84,9 @@ colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 ## Usage
 
 ### Modifying the Package for Your Setup
-Before running the package, make sure to modify the following parts of the package to match your setup:
+Before running the package, make sure to modify the `setup_config.yaml` file located in the `/ros2_lidar_camera_fusion_with_detection/config` directory to match your setup:
 
-1. **Configure the Transformation Matrix**: Modify the transformation matrix between the Lidar and the camera to match your setup by updating the `transform.yaml` file located in the `/ros2_lidar_camera_fusion_with_detection/config` directory.
+1. **Configure the Transformation Matrix**: Modify the transformation matrix between the Lidar and the camera to match your setup by updating
    Example:
 ```
 transformation_matrix:
@@ -96,19 +96,14 @@ transformation_matrix:
   - [0, 0, 0, 1]
 ```
 
-3. **Specify the Distance Range**: Set the distance range for points that should be transformed. In this example, only points between 0.5 and 10 meters are considered.
+3. **Specify the Depth Range**: Set the depth range for points that should be transformed. In this example, only points between 0.5 and 10 meters are considered.
    Example:
    
-   ```python
-    if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and (0.1 <= x <= 10.0):
-                # Convert point to PointStamped for transformation
-                point_stamped = PointStamped()
-                point_stamped.point.x = x
-                point_stamped.point.y = y
-                point_stamped.point.z = z
-                point_stamped.header.frame_id = self.lidar_frame_
-                points.append(point_stamped)
-   ```
+```
+  depth_range:
+  min: 0.5  # Minimum depth
+  max: 10   # Maximum depth
+```
 ### Build the Package
 After modifying the code, build your package:
 ```bash
