@@ -83,8 +83,8 @@ colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 
 ## Usage
 
-### Modifying the Code for Your Setup
-Before running the package, make sure to modify the following parts of the code in `lidar_camera_fusion_with_detection.py` to match your setup:
+### Modifying the Package for Your Setup
+Before running the package, make sure to modify the following parts of the package to match your setup:
 
 1. **Configure the Transformation Matrix**: Modify the transformation matrix between the Lidar and the camera to match your setup by updating the `transform.yaml` file located in the `/ros2_lidar_camera_fusion_with_detection/config` directory.
    Example:
