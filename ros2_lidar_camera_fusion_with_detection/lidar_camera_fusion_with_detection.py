@@ -10,7 +10,7 @@ import math
 import cv2
 from cv_bridge import CvBridge
 from yolov8_msgs.msg import DetectionArray
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PoseArray, Pose
 import struct
 
 class LidarToImageProjection(Node):
@@ -36,6 +36,9 @@ class LidarToImageProjection(Node):
         # OpenCV Bridge for converting ROS Image to OpenCV format
         self.bridge = CvBridge()
 
+        # Initialize bounding_boxes as an empty list
+        self.bounding_boxes = []
+
         # Subscribe to Lidar Point Cloud
         self.subscription = self.create_subscription(PointCloud2, '/scan/points', self.pointcloud_callback, 10)
 
@@ -51,8 +54,8 @@ class LidarToImageProjection(Node):
         # Publisher for Image with projected Lidar points
         self.image_publisher = self.create_publisher(Image, '/image_lidar', 10)
 
-        # Publisher for publishing the detected objects' positions
-        self.distance_publisher = self.create_publisher(Point, '/detected_object_position', 10)
+        # Publisher for publishing an array of detected object positions
+        self.detected_object_array_publisher = self.create_publisher(PoseArray, '/detected_object_position', 10)
 
         # Publisher for detected object's point cloud
         self.object_pointcloud_publisher = self.create_publisher(PointCloud2, '/detected_object_pointcloud', 10)
@@ -101,7 +104,7 @@ class LidarToImageProjection(Node):
             transformed_point, u, v = self.transformation(x, y, z, self.transformation_matrix)
             self.point_cloud_within_bounding_box(u, v, transformed_point, bbox_values, image_with_points, point, msg.header)
 
-        # Step 4: Detected object position
+        # Step 4: Detected object position with recpect to the lidar frame
         self.detected_object_position(bbox_values, msg.header)
 
         image_msg = self.bridge.cv2_to_imgmsg(image_with_points, encoding='bgr8')
@@ -116,6 +119,8 @@ class LidarToImageProjection(Node):
             # Check if x, y, or z are finite values and if x (depth) is within the loaded depth range from YAML
             if math.isfinite(x) and math.isfinite(y) and math.isfinite(z) and self.depth_range_min < x < self.depth_range_max:
                 points.append([x, y, z])
+                # print(x,y,z)
+
         return points
 
     def transformation(self, x, y, z, transformation_matrix):
@@ -135,9 +140,10 @@ class LidarToImageProjection(Node):
             for i, bbox in enumerate(self.bounding_boxes):
                 top_left_x, top_left_y, bottom_right_x, bottom_right_y = bbox
                 if top_left_x <= u <= bottom_right_x and top_left_y <= v <= bottom_right_y:
-                    bbox_values[i]['x'].append(transformed_point[1])
-                    bbox_values[i]['y'].append(transformed_point[2])
-                    bbox_values[i]['z'].append(transformed_point[0])
+                    bbox_values[i]['x'].append(transformed_point[0])
+                    bbox_values[i]['y'].append(transformed_point[1])
+                    bbox_values[i]['z'].append(transformed_point[2])
+                    # print(f"Bounding Box {i}: x = {transformed_point[0]}, y = {transformed_point[1]}, z = {transformed_point[2]}")
                     bbox_values[i]['points'].append(point)
                     cv2.circle(image_with_points, (int(u), int(v)), 3, (0, 0, 255), -1)
 
@@ -149,6 +155,11 @@ class LidarToImageProjection(Node):
                 self.object_pointcloud_publisher.publish(object_pointcloud)
 
     def detected_object_position(self, bbox_values, header):
+        
+        pose_array_msg = PoseArray()
+        header.frame_id = "interceptor/gimbal_camera"
+        pose_array_msg.header = header 
+        
         for i, values in bbox_values.items():
             if values['points']:  # Avoid empty lists
                 avg_x = sum(values['x']) / len(values['x'])
@@ -157,14 +168,21 @@ class LidarToImageProjection(Node):
 
                 self.get_logger().info(
                     f"Bounding Box {i + 1}: Detected Object Position (x, y, z) = "
-                    f"({avg_z:.2f}, {avg_x:.2f}, {avg_y:.2f}) meters"
+                    f"({avg_x:.2f}, {avg_y:.2f}, {avg_z:.2f}) meters"
                 )
 
-                distance_msg = Point()
-                distance_msg.x = avg_z  # transformed x is now z
-                distance_msg.y = avg_x  # transformed y is now x
-                distance_msg.z = avg_y  # transformed z is now y
-                self.distance_publisher.publish(distance_msg)
+                # Create a Pose for each detected object
+                pose_msg = Pose()
+                pose_msg.position.x = avg_x  
+                pose_msg.position.y = avg_y  
+                pose_msg.position.z = avg_z  
+
+                # Add the pose to the pose array
+                pose_array_msg.poses.append(pose_msg)
+
+        # Publish the array of detected object positions
+        self.detected_object_array_publisher.publish(pose_array_msg)
+
 
     def create_pointcloud2_msg(self, points, header):
         fields = [
