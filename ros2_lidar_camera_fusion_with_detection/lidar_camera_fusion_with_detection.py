@@ -29,6 +29,8 @@ class LidarToImageProjection(Node):
 
         self.get_logger().info(f'Loaded transformation matrix:\n{self.transformation_matrix}')
         self.get_logger().info(f'Loaded depth_range: min={self.depth_range_min}, max={self.depth_range_max}')
+        self.get_logger().info('Lidar & Camera Fusion Node has been started.')
+
 
         # Image to hold the current frame
         self.current_image = None
