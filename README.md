@@ -65,21 +65,28 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 - **C++ compiler (GCC 8 or newer).**
 - **PCL (Point Cloud Library), OpenCV, and other ROS2 dependencies.**
 
-### Clone the Repository
+### Clone the Repository:
 ```bash
 cd ~/ros2_ws/src
-git clone https://github.com/AbdullahGM1/ros2_lidar_camera_fusion_with_detection.git
+git clone https://github.com/AbdullahGM1/ros2_lidar_camera_fusion_with_detection_cpp.git
 ```
-### Install Dependencies
-Run `rosdep` to install any missing dependencies:
+### Install Dependencies:
+Install the necessary dependencies using the following command:
 ```bash
-cd ~/ros2_ws
-rosdep install --from-paths src --ignore-src -r -y
+sudo apt-get update
+sudo apt-get install libpcl-dev libopencv-dev
 ```
-### Build the Package
+### Build the Package:
 After cloning and installing dependencies, build your package:
 ```bash
-colcon build --packages-select ros2_lidar_camera_fusion_with_detection
+cd ~/ros2_ws
+colcon build --packages-select ros2_lidar_camera_fusion_with_detection_cpp
+```
+### Source the setup files:
+After cloning and installing dependencies, build your package:
+```bash
+cd ~/ros2_ws
+colcon build --packages-select ros2_lidar_camera_fusion_with_detection_cpp
 ```
 ---
 
