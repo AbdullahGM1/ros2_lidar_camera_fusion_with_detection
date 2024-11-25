@@ -66,7 +66,7 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 ### Clone the Repository
 ```bash
 cd ~/ros2_ws/src
-git clone https://github.com/yourusername/ros2_lidar_camera_fusion_with_detection.git
+git clone https://github.com/AbdullahGM1/ros2_lidar_camera_fusion_with_detection.git
 ```
 ### Install Dependencies
 Run `rosdep` to install any missing dependencies:
