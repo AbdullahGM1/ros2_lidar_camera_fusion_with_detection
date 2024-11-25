@@ -61,7 +61,9 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 
 ### Prerequisites
 - **ROS2 Humble**: Ensure you have ROS2 Humble installed on your machine. [Installation Guide](https://docs.ros.org/en/humble/Installation.html)
-- **yolovX_ros**: Follow the instructions to set up YOLOvX in ROS2 for object detection. [Installation Guide](https://github.com/mgonzs13/yolov8_ros) 
+- **yolovX_ros**: Follow the instructions to set up YOLOvX in ROS2 for object detection. [Installation Guide](https://github.com/mgonzs13/yolov8_ros)
+- **C++ compiler (GCC 8 or newer).**
+- **PCL (Point Cloud Library), OpenCV, and other ROS2 dependencies.**
 
 ### Clone the Repository
 ```bash
