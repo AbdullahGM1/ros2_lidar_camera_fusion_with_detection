@@ -62,31 +62,28 @@ This ROS2 package fuses 360-degree lidar and camera data for enhanced object tra
 ### Prerequisites
 - **ROS2 Humble**: Ensure you have ROS2 Humble installed on your machine. [Installation Guide](https://docs.ros.org/en/humble/Installation.html)
 - **yolovX_ros**: Follow the instructions to set up YOLOvX in ROS2 for object detection. [Installation Guide](https://github.com/mgonzs13/yolov8_ros)
-- **C++ compiler (GCC 8 or newer).**
-- **PCL (Point Cloud Library), OpenCV, and other ROS2 dependencies.**
+
 
 ### Clone the Repository:
 ```bash
 cd ~/ros2_ws/src
-git clone https://github.com/AbdullahGM1/ros2_lidar_camera_fusion_with_detection_cpp.git
+git clone https://github.com/AbdullahGM1/ros2_lidar_camera_fusion_with_detection.git
 ```
 ### Install Dependencies:
-Install the necessary dependencies using the following command:
+Install ``Python`` dependencies:
 ```bash
-sudo apt-get update
-sudo apt-get install libpcl-dev libopencv-dev
+pip3 install opencv-python numpy pyyaml
 ```
 ### Build the Package:
-After cloning and installing dependencies, build your package:
+Navigate to your ROS2 workspace and compile the package using ``colcon``:
 ```bash
 cd ~/ros2_ws
-colcon build --packages-select ros2_lidar_camera_fusion_with_detection_cpp
+colcon build --packages-select ros2_lidar_camera_fusion_with_detection
 ```
-### Source the setup files:
-After cloning and installing dependencies, build your package:
+### Source the Setup Files:
+Source the workspace:
 ```bash
-cd ~/ros2_ws
-colcon build --packages-select ros2_lidar_camera_fusion_with_detection_cpp
+source install/setup.bash
 ```
 ---
 
