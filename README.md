@@ -125,7 +125,7 @@ source ~/ros2_ws/install/setup.bash
 ```
 
 ### Run the Node
-To run the package with your custom launch file (make sure you specify it):
+To run the package:
 ```bash
 ros2 run ros2_lidar_camera_fusion_with_detection lidar_camera_fusion_with_detection
 ```
